@@ -1,0 +1,71 @@
+﻿@page "/peliculas/buscar"
+@inject IRepositorio repositorio
+<h3>Filtro Peliculas</h3>
+
+<div class="form-inline">
+    <div class="form-group mb-2">
+        <label for="titulo" class="sr-only">Titulo</label>
+        <input @bind-value="titulo" @bind-value:event="oninput" @onkeypress="@((KeyboardEventArgs e) => TituloKeyPress(e))"
+               type="text" class="form-control" id="Titulo" placeholder="Título Película" />
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <select class="form-control" @bind="generoSeleccionado">
+            <option value="0">--Seleccione un género--</option>
+            @foreach (var item in generos)
+            {
+                <option value="@item.Id">@item.Nombre</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="estreno" @bind="futurosEstrenos" />
+        <label class="form-check-label" for="estrenos">Futuros Estrenos</label>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="estreno" @bind="enCartelera" />
+        <label class="form-check-label" for="enCartelera">En Cartelera</label>
+    </div>
+    <div class="form-group mx-sm-3 mb-2">
+        <input type="checkbox" class="form-check-input" id="estreno" @bind="masVotadas" />
+        <label class="form-check-label" for="masVotadas">Mas Votadas</label>
+    </div>
+
+    <button type="button" class="btn btn-primary mb-2 mx-sm-3" @onclick="CargarNuevasPeliculas">Filtrar</button>
+    <button type="button" class="btn btn-danger mb-2 mx-sm-3" @onclick="Limpiar">Limpiar</button>
+</div>
+<ListadoPeliculas Peliculas="ListadoPeliculas"></ListadoPeliculas>
+@code {
+
+    string titulo = string.Empty;
+    string generoSeleccionado = "0";
+    private bool futurosEstrenos;
+    private bool enCartelera;
+    private bool masVotadas;
+
+
+    private List<Genero> generos = new List<Genero>();
+    private List<Pelicula> ListadoPeliculas;
+    private void TituloKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+
+        }
+    }
+
+    private void CargarNuevasPeliculas()
+    {
+        ListadoPeliculas = repositorio.ObtenerPeliculas().Where(x => x.Titulo.ToLower().Contains(titulo.ToLower())).ToList();
+        Console.WriteLine(titulo);
+    }
+
+    private void Limpiar()
+    {
+        ListadoPeliculas = repositorio.ObtenerPeliculas();
+    }
+
+    protected override void OnInitialized()
+    {
+        ListadoPeliculas = repositorio.ObtenerPeliculas();
+    }
+}
